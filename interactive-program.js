@@ -10,32 +10,41 @@ const userInfo = {
   password: "password123"
 }
 
+let passwordAttempt
+
 function createLoginTracker(userInfo) {
-  let attemptCount = 0;
-let inputPassword;
 
-  const loginAttempt = (passwordAttempt) => {
-    if (attemptCount >= 3) {
-      console.log("You've attempted to enter the wrong password many times. Your account has been locked. Please contact tech support");
-      readline.close();
-      return;
+    let attemptCount = 0
+
+    const loginAttempt = (passwordAttempt) => {
+        if (passwordAttempt === userInfo.password) {
+            console.log('Login successful')
+            readline.close();
+            return
+        }
+
+        else {
+            attemptCount++;
+            if (attemptCount < 3) {
+                console.log(`Attempt ${attemptCount}: Login failed`)
+                readline.question(`Please enter password again`, (inputPassword) => {
+                    passwordAttempt = inputPassword;
+                    loginAttempt(passwordAttempt);
+                })
+            }
+            
+            else if (attemptCount >= 3) {
+                console.log('Account locked due to too many failed login attempts')
+                readline.close();
+            }
+        }
     }
 
-    readline.question(`Welcome, ${userInfo.userName}! Please enter your password`, (inputPassword) => {
-      if (inputPassword !== userInfo.password) {
-        console.log("The username or password is incorrect")
-      attemptCount++;
-      loginAttempt();
-      }
+    readline.question(`Welcome, ${userInfo.userName}! Please type your password`, (inputPassword) => {
+        passwordAttempt = inputPassword;
 
-      else {
-      console.log("You've succesfully logged in!")
-      readline.close();
-    }
+        loginAttempt(passwordAttempt)
     })
-  }
-
-  return loginAttempt(inputPassword);
 }
 
 createLoginTracker(userInfo);
